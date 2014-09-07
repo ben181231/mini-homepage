@@ -6,7 +6,6 @@ module.exports = (grunt) ->
             dist:
                 options:
                     style: 'expanded'
-                    # style: 'compressed'
                     trace: yes
                 files:
                     'build/css-noprefix/style.css': 'scss/*.scss'
@@ -34,7 +33,23 @@ module.exports = (grunt) ->
         html_minify:
             dist:
                 files:
-                    'build/main.min.html': 'build/combine/main.combine.html'
+                    'build/min/main.min.html': 'build/combine/main.combine.html'
+
+        symlink:
+            options:
+                overwrite: yes
+            explicit:
+                src: 'build/min/main.min.html'
+                dest: 'dist/main.html'
+
+        connect:
+            server:
+                options:
+                    hostname: 'localhost'
+                    port: 12334
+                    base: 'dist'
+                    livereload: yes
+
 
         watch:
             dist:
@@ -50,9 +65,13 @@ module.exports = (grunt) ->
     grunt.loadNpmTasks 'grunt-htmlcssjs-combine'
     grunt.loadNpmTasks 'grunt-html-minify'
     grunt.loadNpmTasks 'grunt-contrib-watch'
+    grunt.loadNpmTasks 'grunt-contrib-symlink'
+    grunt.loadNpmTasks 'grunt-contrib-connect'
 
-    grunt.registerTask 'build', ['sass', 'autoprefixer', 'coffee', 'html_minify']
-    grunt.registerTask 'combine', ['htmlcssjs', 'html_minify']
-    grunt.registerTask 'default', ['build', 'combine', 'watch']
+
+    grunt.registerTask 'build', ['sass', 'autoprefixer', 'coffee']
+    grunt.registerTask 'combine', ['htmlcssjs', 'html_minify', 'symlink']
+    grunt.registerTask 'server', ['connect']
+    grunt.registerTask 'default', ['build', 'combine', 'server', 'watch']
 
     return
