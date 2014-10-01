@@ -1,6 +1,57 @@
-.main{
-    h1{
-        text-align: center;
+$bodyBackground: #ccc;
+$searchBackground: #333;
+
+body{
+    background-color: $bodyBackground;
+    font-family: "Helvetica Neue Light", "Helvetica", sans-serif;
+}
+
+#search{
+    position: absolute;
+    display: inline-block;
+    width: 300px;
+    height: auto;
+    top: 10%;
+    left: 50%;
+    margin-left: -170px;
+    padding: 20px;
+    text-align: center;
+    background-color: transparentize($searchBackground, 1.0);
+    transition: background-color 0.7;
+
+    &.active{
+        background-color: $searchBackground;
+
+        #result{
+            opacity: 1;
+        }
     }
-    background-color: lighten(purple, 70%);
+
+    #searchBox{
+        width: 100%;
+        margin-bottom: 20px;
+    }
+
+    #result{
+        width: 100%;
+        height: auto;
+        color: #fff;
+        opacity: 0;
+        transition: opacity 1s;
+
+        ul{
+            list-style: none;
+            padding-left: 0px;
+
+            li{
+                text-align: left;
+                padding: 10px;
+
+                &.selected{
+                    border-left: 3px solid #3399ff;
+                    background-color: #111;
+                }
+            }
+        }
+    }
 }

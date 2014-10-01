@@ -1,7 +1,7 @@
 module.exports = (grunt) ->
     grunt.initConfig
         pkg: grunt.file.readJSON 'package.json'
-        
+
         sass:
             dist:
                 options:
@@ -24,9 +24,14 @@ module.exports = (grunt) ->
                 files:
                     'build/js/script.js': 'coffee/*.coffee'
 
+        uglify:
+            compile:
+                files:
+                    'build/js/script.min.js': 'build/js/script.js'
+
         htmlcssjs:
             main: {
-                src: ['build/css/style.css', 'build/js/script.js', 'html/main.html']
+                src: ['build/css/style.css', 'build/js/script.min.js', 'html/main.html']
                 dest: 'build/combine/main.combine.html'
             }
 
@@ -67,10 +72,11 @@ module.exports = (grunt) ->
     grunt.loadNpmTasks 'grunt-contrib-watch'
     grunt.loadNpmTasks 'grunt-contrib-symlink'
     grunt.loadNpmTasks 'grunt-contrib-connect'
+    grunt.loadNpmTasks 'grunt-contrib-uglify'
 
 
     grunt.registerTask 'build', ['sass', 'autoprefixer', 'coffee']
-    grunt.registerTask 'combine', ['htmlcssjs', 'html_minify', 'symlink']
+    grunt.registerTask 'combine', ['uglify', 'htmlcssjs', 'html_minify', 'symlink']
     grunt.registerTask 'server', ['connect']
     grunt.registerTask 'default', ['build', 'combine', 'server', 'watch']
 
