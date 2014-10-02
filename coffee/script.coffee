@@ -5,6 +5,7 @@ window._i = () ->
     queryUrl = 'http://suggestqueries.google.com/complete/search?client=firefox&callback=_sr&q='
     searchUrl = 'http://www.google.com/search?q='
     selectedIndex = -1
+    maxResultCount = 5
     cachedString = ''
 
     # function definition
@@ -13,8 +14,8 @@ window._i = () ->
     qsa = (selector) -> document.querySelectorAll selector
 
     window._sr = (data) ->
-        selectedIndex = -1;
-        resultString = '<ul>';
+        selectedIndex = -1
+        resultString = '<ul>'
 
         dataList = data[1]
 
@@ -23,12 +24,15 @@ window._i = () ->
         else
             qs('#search').classList.remove 'active'
 
-        dataList.forEach (perResult) ->
-            resultString += "<li> #{perResult} </li>"
+        dataList.forEach (perResult, idx) ->
+            return if idx >= maxResultCount
+            resultString += "<a href=\"#{searchUrl+perResult}\">"
+            resultString += "<li data-content=\"#{perResult}\">"
+            resultString += " #{perResult} </li></a>"
             return
 
-        resultString += '</ul>';
-        qs('#result').innerHTML = resultString;
+        resultString += '</ul>'
+        qs('#result').innerHTML = resultString
 
         return
 
@@ -39,15 +43,19 @@ window._i = () ->
         return
 
     updateList = () ->
-        allSelectedList =
         for item in qsa '#result li.selected'
             item.classList.remove 'selected'
 
-        qsa('#result li')[selectedIndex].classList.add 'selected'
+        allListItems = qsa('#result li')
+
+        if selectedIndex >= 0 and selectedIndex < allListItems.length
+            selectedItem = allListItems[selectedIndex]
+            selectedItem.classList.add 'selected'
+            qs('#searchBox').value = selectedItem.dataset.content.trim()
 
         return
 
-    qs('#searchBox').addEventListener 'keyup', (event) ->
+    qs('body').addEventListener 'keyup', (event) ->
         val = qs('#searchBox').value.trim()
 
         if val.length > 0
@@ -58,12 +66,12 @@ window._i = () ->
                     selectedIndex = if selectedIndex < -1 then -1 else selectedIndex
                     updateList()
                 when 40     # arrow-down
-                    selectedIndex += 1;
+                    selectedIndex += 1
                     selectedIndex = if selectedIndex >= allList.length then selectedIndex % allList.length else selectedIndex
                     updateList()
                 when 13     # enter
                     if selectedIndex >= 0 and selectedIndex < allList.length
-                        val = allList[selectedIndex].innerHTML
+                        val = allList[selectedIndex].dataset.content.trim()
                     window.location = searchUrl + encodeURI val
                 else
                     return if val is cachedString
@@ -72,7 +80,7 @@ window._i = () ->
                     clearTimeout(globalTimeout) if globalTimeout
                     globalTimeout = setTimeout () ->
                         jsonpRequest val
-                    , 300
+                    , 500
         else
             qs('#search').classList.remove 'active'
             qs('#result').innerHTML = ''

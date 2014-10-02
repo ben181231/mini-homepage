@@ -50,7 +50,6 @@ module.exports = (grunt) ->
         connect:
             server:
                 options:
-                    hostname: 'localhost'
                     port: 12334
                     base: 'dist'
                     livereload: yes
