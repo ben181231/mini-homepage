@@ -45,13 +45,13 @@ module.exports = (grunt) ->
                 overwrite: yes
             explicit:
                 src: 'build/min/main.min.html'
-                dest: 'dist/main.html'
+                dest: 'dist/html/index.html'
 
         connect:
             server:
                 options:
                     port: 12334
-                    base: 'dist'
+                    base: 'dist/html'
                     livereload: yes
 
 
@@ -73,10 +73,32 @@ module.exports = (grunt) ->
     grunt.loadNpmTasks 'grunt-contrib-connect'
     grunt.loadNpmTasks 'grunt-contrib-uglify'
 
-
     grunt.registerTask 'build', ['sass', 'autoprefixer', 'coffee']
     grunt.registerTask 'combine', ['uglify', 'htmlcssjs', 'html_minify', 'symlink']
     grunt.registerTask 'server', ['connect']
     grunt.registerTask 'default', ['build', 'combine', 'server', 'watch']
+    grunt.registerTask 'dist', ['clean', 'build', 'combine', 'encode']
+
+    # custom tasks
+    grunt.registerTask 'encode', 'Encode the whole html into URI', () ->
+        srcURL = 'dist/html/index.html'
+        dstURL = 'dist/encodedURI'
+        content = grunt.file.read(srcURL)
+        content = 'data:text/html,' + escape content
+        grunt.file.write dstURL, content
+        grunt.log.oklns "Successfully output encoded URI to file \"#{dstURL}\""
+        return
+
+    grunt.registerTask 'clean', 'Clean the build and dist directories', () ->
+        buildDir = 'build'
+        distDir = 'dist'
+        if grunt.file.exists buildDir
+            grunt.log.writeln 'Cleaning build directory...'
+            grunt.file.delete buildDir
+        if grunt.file.exists distDir
+            grunt.log.writeln 'Cleaning dist directory...'
+            grunt.file.delete distDir
+
+        return
 
     return
