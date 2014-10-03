@@ -13,6 +13,8 @@ window._i = () ->
 
     qsa = (selector) -> document.querySelectorAll selector
 
+    searchContainer = qs('#search')
+    resultDisplay = qs('#result')
     window._sr = (data) ->
         selectedIndex = -1
         resultString = '<ul>'
@@ -20,9 +22,11 @@ window._i = () ->
         dataList = data[1]
 
         if dataList.length > 0
-            qs('#search').classList.add 'active'
+            timeDisplay.classList.add 'hide'
+            searchContainer.classList.add 'active'
         else
-            qs('#search').classList.remove 'active'
+            timeDisplay.classList.remove 'hide'
+            searchContainer.classList.remove 'active'
 
         dataList.forEach (perResult, idx) ->
             return if idx >= maxResultCount
@@ -32,7 +36,7 @@ window._i = () ->
             return
 
         resultString += '</ul>'
-        qs('#result').innerHTML = resultString
+        resultDisplay.innerHTML = resultString
 
         return
 
@@ -82,9 +86,26 @@ window._i = () ->
                         jsonpRequest val
                     , 500
         else
-            qs('#search').classList.remove 'active'
-            qs('#result').innerHTML = ''
+            timeDisplay.classList.remove 'hide'
+            searchContainer.classList.remove 'active'
+            resultDisplay.innerHTML = ''
             clearTimeout(globalTimeout) if globalTimeout
         return
+
+    timeDisplay = qs '#time'
+    if timeDisplay
+        updateTime = () ->
+            currentDate = new Date()
+
+            timeString = currentDate.toTimeString()
+            timeStringMatches = timeString.match /\d+:\d+:\d+/
+            timeString = timeStringMatches[0] if timeStringMatches
+
+            timeDisplay.innerHTML = currentDate.toDateString() + ', ' + timeString
+
+            return;
+
+        updateTime()
+        setInterval updateTime, 1000
 
     return

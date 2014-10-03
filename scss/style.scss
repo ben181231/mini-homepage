@@ -15,20 +15,34 @@ a{
     color: $textColor;
 }
 
+.hide{
+    opacity: 0 !important;
+}
+
+
 #search{
     position: absolute;
     display: inline-block;
-    width: 320px;
+    width: 300px;
     height: auto;
     top: 50%;
     left: 50%;
     padding: 0px;
-    margin-top: -19px;
-    margin-left: -160px;
+    margin-top: -54px;
+    margin-left: -150px;
     transition: margin-top 0.3s;
 
+    #time{
+        position: relative;
+        bottom: 5px;
+        font-size: 1.5em;
+        text-align: center;
+        opacity: 0.7;
+        transition: opacity 0.4s;
+    }
+
     &.active{
-        margin-top: -38px * 5 / 2 + -19px;
+        margin-top: -38px * 5 / 2 + -54px;
 
         #result{
             opacity: 1;
