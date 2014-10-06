@@ -15,7 +15,7 @@ module.exports = (grunt) ->
                 files: [
                     expand: yes
                     flatten: yes
-                    src: 'build/css-noprefix/*.css',
+                    src: 'build/css-noprefix/*.css'
                     dest: 'build/css/'
                 ]
 

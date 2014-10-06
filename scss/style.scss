@@ -1,5 +1,5 @@
 $bodyBackground: #333399;
-$searchBackground: #001326;
+$listBackground: #542b97;
 $listHighlight: #3399ff;
 $textColor: #fff;
 
@@ -8,6 +8,7 @@ body{
     background: linear-gradient($bodyBackground, darken($bodyBackground, 10%));
     font-family: "Helvetica", sans-serif;
     color: $textColor;
+    margin: 0;
 }
 
 a{
@@ -15,10 +16,36 @@ a{
     color: $textColor;
 }
 
-.hide{
-    opacity: 0 !important;
+.nodisplay{
+    display: none !important;
 }
 
+.listContainer{
+    width: 100%;
+    height: auto;
+    color: #fff;
+    max-width: 300px;
+
+    ul{
+        list-style: none;
+        margin: 0px;
+        padding-left: 0px;
+
+        li{
+            padding: 10px;
+            background-color: $listBackground;
+            border: {
+                left: 3px solid darken($listHighlight, 30%);
+                bottom: 1px solid lighten($listBackground, 10%);
+            }
+
+            &.selected{
+                border-left: 3px solid $listHighlight;
+                background-color: lighten($listBackground, 20%) !important;
+            }
+        }
+    }
+}
 
 #search{
     position: absolute;
@@ -32,27 +59,25 @@ a{
     margin-left: -150px;
     transition: margin-top 0.5s;
 
-    #time{
-        position: relative;
-        bottom: 5px;
-        font-size: 1.5em;
-        text-align: center;
-        opacity: 0.7;
-        transition: opacity 0.5s, transform 0.5s;
-        transform-origin: bottom;
-
-        &.hide{
-            transform: rotateX(90deg);
-        }
-    }
-
     &.active{
         margin-top: -38px * 5 / 2 + -54px;
 
+        #time{
+            transform: rotateX(90deg);
+        }
+
         #result{
-            opacity: 1;
             transform: rotateX(0deg);
         }
+    }
+
+    #time{
+        padding-bottom: 5px;
+        font-size: 1.5em;
+        text-align: center;
+        opacity: 0.7;
+        transition: transform 0.5s;
+        transform-origin: bottom;
     }
 
     #searchBox{
@@ -73,32 +98,33 @@ a{
     }
 
     #result{
-        width: 100%;
-        height: auto;
-        color: #fff;
-        opacity: 0;
-        transition: opacity 0.5s 0.3s, transform 0.5s 0.3s;
+        transition: transform 0.5s 0.3s;
         transform-origin: top;
         transform: rotateX(90deg);
+    }
+}
 
-        ul{
-            list-style: none;
-            margin: 0px;
-            padding-left: 0px;
+#hothit{
+    display: inline-block;
+    position: relative;
+    bottom: 0px;
+    left: -150px;
+    width: 150px;
+    transition: left 0.5s 0.3s;
 
-            li{
-                padding: 10px;
-                background-color: $searchBackground;
-                border: {
-                    left: 3px solid darken($listHighlight, 30%);
-                    bottom: 1px solid lighten($searchBackground, 10%);
-                }
-
-                &.selected{
-                    border-left: 3px solid $listHighlight;
-                    background-color: lighten($searchBackground, 20%) !important;
-                }
-            }
+    &.show{
+        left: 0;
+    }
+    li{
+        font-size: 18px;
+        img{
+            width: 20px;
+            height: 20px;
+            padding-right: 10px;
+            margin-bottom: -3px;
+        }
+        &:hover, &.selected{
+            background-color: lighten($listBackground, 10%);
         }
     }
 }
