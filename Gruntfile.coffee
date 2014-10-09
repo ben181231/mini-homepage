@@ -20,20 +20,22 @@ module.exports = (grunt) ->
                 ]
 
         coffee:
-            compile:
+            dist:
                 files:
                     'build/js/script.js': 'coffee/*.coffee'
 
         uglify:
-            compile:
+            dist:
                 files:
                     'build/js/script.min.js': 'build/js/script.js'
 
         htmlcssjs:
-            main: {
+            dev:
+                src: ['build/css/style.css', 'build/js/script.js', 'html/main.html']
+                dest: 'build/combine/main.combine.html'
+            dist:
                 src: ['build/css/style.css', 'build/js/script.min.js', 'html/main.html']
                 dest: 'build/combine/main.combine.html'
-            }
 
         html_minify:
             dist:
@@ -44,21 +46,20 @@ module.exports = (grunt) ->
             options:
                 overwrite: yes
             explicit:
-                src: 'build/min/main.min.html'
-                dest: 'dist/html/index.html'
+                src: 'build/combine/main.combine.html'
+                dest: 'build/devBox/index.html'
 
         connect:
             server:
                 options:
                     port: 12334
-                    base: 'dist/html'
+                    base: 'build/devBox'
                     livereload: yes
-
 
         watch:
             dist:
                 files: ['scss/*.scss', 'coffee/*.coffee', 'html/*.html']
-                tasks: ['build', 'combine']
+                tasks: ['build', 'combine-dev']
                 options:
                     livereload: yes
 
@@ -74,14 +75,18 @@ module.exports = (grunt) ->
     grunt.loadNpmTasks 'grunt-contrib-uglify'
 
     grunt.registerTask 'build', ['sass', 'autoprefixer', 'coffee']
-    grunt.registerTask 'combine', ['uglify', 'htmlcssjs', 'html_minify', 'symlink']
+
+    grunt.registerTask 'combine-dev', ['htmlcssjs:dev', 'symlink']
+    grunt.registerTask 'combine', ['uglify', 'htmlcssjs:dist', 'html_minify']
+
     grunt.registerTask 'server', ['connect']
-    grunt.registerTask 'default', ['build', 'combine', 'server', 'watch']
+
+    grunt.registerTask 'default', ['clean', 'build', 'combine-dev', 'server', 'watch']
     grunt.registerTask 'dist', ['clean', 'build', 'combine', 'encode']
 
     # custom tasks
     grunt.registerTask 'encode', 'Encode the whole html into URI', () ->
-        srcURL = 'dist/html/index.html'
+        srcURL = 'build/min/main.min.html'
         dstURL = 'dist/encodedURI'
         content = grunt.file.read(srcURL)
         content = 'data:text/html,' + escape content

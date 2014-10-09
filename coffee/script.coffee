@@ -2,10 +2,12 @@
 window._i = () ->
     window._i = null
     globalTimeout = null
-    queryUrl = 'http://suggestqueries.google.com/complete/search?client=firefox&callback=_sr&q='
+    queryUrl = 'http://suggestqueries.google.com/complete/search?\
+    client=firefox&callback=_sr&q='
     searchUrl = 'http://www.google.com/search?q='
     selectedIndex = -1
     hotHitSelectedIndex = -1
+    isHotHitSelectionMode = no
     maxResultCount = 5
     cachedString = ''
     hotHitDB = [
@@ -37,6 +39,7 @@ window._i = () ->
     resultDisplay = qs '#result'
     timeDisplay = qs '#time'
     hotHitDisplay = qs '#hotHit'
+    searchBoxInput = qs '#searchBox'
 
     window._sr = (data) ->
         selectedIndex = -1
@@ -79,23 +82,40 @@ window._i = () ->
         return
 
     updateList = () ->
-        for item in qsa '#result li.selected'
+        targetZone = if isHotHitSelectionMode then '#hotHit'
+        else '#result'
+        for item in qsa "#{targetZone} li.selected"
             item.classList.remove 'selected'
 
-        allListItems = qsa('#result li')
+        allListItems = qsa("#{targetZone} li")
 
-        if selectedIndex >= 0 and selectedIndex < allListItems.length
-            selectedItem = allListItems[selectedIndex]
+        targetIndex =
+            if isHotHitSelectionMode then hotHitSelectedIndex
+            else selectedIndex
+
+        if targetIndex >= 0 and targetIndex < allListItems.length
+            selectedItem = allListItems[targetIndex]
             selectedItem.classList.add 'selected'
-            qs('#searchBox').value = selectedItem.dataset.content.trim()
+            if not isHotHitSelectionMode
+                searchBoxInput.value =
+                    selectedItem.dataset.content.trim()
+        return
 
+    changeLocation = (url) ->
+        if typeof url is 'string'
+            window.location = url
+
+    keyDownHandler = (event) ->
+        val = searchBoxInput.value.trim()
+        if val.length is 0 and event.keyCode is 32   # white space
+            isHotHitSelectionMode = yes
+            searchBoxInput.blur()
         return
 
     keyUpHandler = (event) ->
-        val = qs('#searchBox').value.trim()
-
+        val = searchBoxInput.value.trim()
         if val.length > 0
-            allList = qsa '#result li'
+            allList = qsa('#result li')
             switch event.keyCode
                 when 38     # arrow-up
                     selectedIndex -= 1
@@ -107,11 +127,11 @@ window._i = () ->
                         selectedIndex = selectedIndex % allList.length
                     updateList()
                 when 13     # enter
-                    if selectedIndex >= 0 and selectedIndex < allList.length
+                    if selectedIndex >= 0 and
+                    selectedIndex < allList.length
                         val = allList[selectedIndex].dataset.content.trim()
-                    window.location = searchUrl + encodeURI val
+                    changeLocation (searchUrl + encodeURI val)
                 else
-                    console.log "Unknown key code #{event.keyCode}"
                     return if val is cachedString
 
                     cachedString = val
@@ -120,11 +140,45 @@ window._i = () ->
                         jsonpRequest val
                     , 500
         else
-            timeDisplay.classList.remove 'hide'
-            hotHitDisplay.classList.add 'show'
-            searchContainer.classList.remove 'active'
-            resultDisplay.innerHTML = ''
-            clearTimeout(globalTimeout) if globalTimeout
+            if isHotHitSelectionMode
+                allList = qsa('#hotHit li')
+                switch event.keyCode
+                    when 38     # arrow-up
+                        hotHitSelectedIndex -= 1
+                        hotHitSelectedIndex = -1 if hotHitSelectedIndex < -1
+                        updateList()
+                        return
+                    when 40     # arrow-down
+                        hotHitSelectedIndex += 1
+                        if hotHitSelectedIndex >= allList.length
+                            hotHitSelectedIndex =
+                                hotHitSelectedIndex % allList.length
+                        updateList()
+                        return
+                    when 32    # white space
+                        isHotHitSelectionMode = no
+                        searchBoxInput.focus()
+
+                        if hotHitSelectedIndex >=0 and \
+                        hotHitSelectedIndex < allList.length
+                            selectedHotHit = allList[hotHitSelectedIndex]
+                            changeLocation selectedHotHit.dataset.url \
+                            if selectedHotHit.dataset.url
+
+                        hotHitSelectedIndex = -1
+                        return
+                    when 49,50,51,52,53,54,55,56,57    # Key 1 ~ 9
+                        toSelectIndex = event.keyCode - 49
+                        if toSelectIndex < allList.length
+                            hotHitSelectedIndex = toSelectIndex
+                            updateList()
+                        return
+            else
+                timeDisplay.classList.remove 'hide'
+                hotHitDisplay.classList.add 'show'
+                searchContainer.classList.remove 'active'
+                resultDisplay.innerHTML = ''
+                clearTimeout(globalTimeout) if globalTimeout
         return
 
     updateTime = () ->
@@ -157,8 +211,10 @@ window._i = () ->
 
             perHotHitListItem = document.createElement 'li'
             perHotHitListItem.dataset.name = perHotHit.name
+            perHotHitListItem.dataset.url = perHotHit.link
             perHotHitListItem.appendChild perHotHitIcon
-            perHotHitListItem.appendChild (document.createTextNode(perHotHit.name))
+            perHotHitListItem.appendChild \
+            (document.createTextNode(perHotHit.name))
 
             perHotHitAnchor = document.createElement 'a'
             perHotHitAnchor.href = perHotHit.link
@@ -179,7 +235,8 @@ window._i = () ->
     updateTime()
     setInterval updateTime, 1000
 
-    qs('body').addEventListener 'keyup', keyUpHandler
+    document.addEventListener 'keyup', keyUpHandler
+    document.addEventListener 'keydown', keyDownHandler
 
     showHotHit()
     updateLayout()
