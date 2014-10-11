@@ -87,18 +87,17 @@ window._i = () ->
         for item in qsa "#{targetZone} li.selected"
             item.classList.remove 'selected'
 
-        allListItems = qsa("#{targetZone} li")
-
         targetIndex =
             if isHotHitSelectionMode then hotHitSelectedIndex
             else selectedIndex
 
-        if targetIndex >= 0 and targetIndex < allListItems.length
-            selectedItem = allListItems[targetIndex]
-            selectedItem.classList.add 'selected'
-            if not isHotHitSelectionMode
-                searchBoxInput.value =
-                    selectedItem.dataset.content.trim()
+        if targetIndex >= 0
+            targetItem = qs("#{targetZone} a:nth-child(#{targetIndex+1}) li")
+            if targetItem?
+                targetItem.classList.add 'selected'
+                if not isHotHitSelectionMode
+                    searchBoxInput.value =
+                        targetItem.dataset.content.trim()
         return
 
     changeLocation = (url) ->
@@ -167,11 +166,16 @@ window._i = () ->
 
                         hotHitSelectedIndex = -1
                         return
-                    when 49,50,51,52,53,54,55,56,57    # Key 1 ~ 9
+                    when 48,49,50,51,52,53,54,55,56,57    # Key 1 ~ 9
                         toSelectIndex = event.keyCode - 49
-                        if toSelectIndex < allList.length
-                            hotHitSelectedIndex = toSelectIndex
-                            updateList()
+                        hotHitSelectedIndex =
+                            if toSelectIndex < allList.length \
+                            then toSelectIndex else -1
+                        updateList()
+                        return
+                    when 192                            # Key backquote
+                        hotHitSelectedIndex = -1
+                        updateList()
                         return
             else
                 timeDisplay.classList.remove 'hide'
