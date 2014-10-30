@@ -1,12 +1,9 @@
-$bodyBackground: #333399;
-$listBackground: #542b97;
-$listHighlight: #3399ff;
-$textColor: #fff;
+@import "theme.scss";
 
 body{
     background-color: $bodyBackground;
-    background: linear-gradient($bodyBackground, darken($bodyBackground, 10%));
-    font-family: "Helvetica", sans-serif;
+    background: linear-gradient(lighten($bodyBackground, 10%), darken($bodyBackground, 10%));
+    font-family: $font-helvetica;
     color: $textColor;
     margin: 0;
 }
