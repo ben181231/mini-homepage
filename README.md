@@ -4,6 +4,12 @@
 Try to create an mini homepage embedded in address bar
 
 ## Setup Development Environment
-- `npm install`
-- `grunt`
+- Install node.js via [Homebrew](http://brew.sh): `brew install node`
+- Install Sass compiler: `gem install sass`
+- Install packages needed: `npm install`
+- Install Grunt.js CLI: `npm install -g grunt-cli`
+- Run development workflow: `grunt`
+
+## Distribution build
+- Run `grunt dist`
 
