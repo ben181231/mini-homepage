@@ -30,7 +30,7 @@ a{
         padding-left: 0px;
 
         li{
-            padding: 10px;
+            padding: 7px;
             background-color: $listBackground;
             border: {
                 left: 3px solid darken($listHighlight, 30%);
@@ -59,7 +59,7 @@ a{
     transition: margin-top 0.5s;
 
     &.active{
-        margin-top: -38px * 5 / 2 + -54px;
+        margin-top: -34px * 7 / 2 + -54px;
 
         #time{
             transform: rotateX(90deg);

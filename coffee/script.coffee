@@ -8,7 +8,7 @@ window._i = () ->
     selectedIndex = -1
     hotHitSelectedIndex = -1
     isHotHitSelectionMode = no
-    maxResultCount = 5
+    maxResultCount = 7
     cachedString = ''
     hotHitDB = [
             name: "Facebook"
