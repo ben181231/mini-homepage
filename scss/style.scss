@@ -2,7 +2,8 @@
 
 body{
     background-color: $bodyBackground;
-    background: linear-gradient(lighten($bodyBackground, 10%), darken($bodyBackground, 10%));
+    background: linear-gradient(darken($bodyBackground, 10%),
+                                lighten($bodyBackground, 10%));
     font-family: $font-helvetica;
     color: $textColor;
     margin: 0;
@@ -38,7 +39,8 @@ a{
 
             &.selected{
                 border-left: 3px solid $listHighlight;
-                background-color: lighten($listBackground, 20%) !important;
+                background-color: lighten($listBackground, 20%)
+                                  !important;
             }
         }
     }
