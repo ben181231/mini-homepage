@@ -19,10 +19,10 @@ module.exports = (grunt) ->
                     dest: 'build/css/'
                 ]
 
-        coffee:
-            dist:
-                files:
-                    'build/js/script.js': 'coffee/*.coffee'
+        jshint:
+            all: [
+                'js/**/*.js'
+            ]
 
         uglify:
             dist:
@@ -43,11 +43,18 @@ module.exports = (grunt) ->
                     'build/min/main.min.html': 'build/combine/main.combine.html'
 
         symlink:
-            options:
-                overwrite: yes
-            explicit:
-                src: 'build/combine/main.combine.html'
-                dest: 'build/devBox/index.html'
+            dist:
+                options:
+                    overwrite: yes
+                files:[
+                    'build/devBox/index.html': 'build/combine/main.combine.html'
+                ]
+            js:
+                options:
+                    overwrite: yes
+                files:[
+                    'build/js/script.js': 'js/script.js'
+                ]
 
         connect:
             server:
@@ -58,7 +65,7 @@ module.exports = (grunt) ->
 
         watch:
             dist:
-                files: ['scss/*.scss', 'coffee/*.coffee', 'html/*.html']
+                files: ['scss/*.scss', 'js/**/*.js', 'html/*.html']
                 tasks: ['build', 'combine-dev']
                 options:
                     livereload: yes
@@ -66,15 +73,15 @@ module.exports = (grunt) ->
 
     grunt.loadNpmTasks 'grunt-contrib-sass'
     grunt.loadNpmTasks 'grunt-autoprefixer'
-    grunt.loadNpmTasks 'grunt-contrib-coffee'
     grunt.loadNpmTasks 'grunt-htmlcssjs-combine'
     grunt.loadNpmTasks 'grunt-html-minify'
     grunt.loadNpmTasks 'grunt-contrib-watch'
     grunt.loadNpmTasks 'grunt-contrib-symlink'
     grunt.loadNpmTasks 'grunt-contrib-connect'
     grunt.loadNpmTasks 'grunt-contrib-uglify'
+    grunt.loadNpmTasks 'grunt-contrib-jshint'
 
-    grunt.registerTask 'build', ['sass', 'autoprefixer', 'coffee']
+    grunt.registerTask 'build', ['jshint', 'sass', 'autoprefixer', 'symlink:js']
 
     grunt.registerTask 'combine-dev', ['htmlcssjs:dev', 'symlink']
     grunt.registerTask 'combine', ['uglify', 'htmlcssjs:dist', 'html_minify']
