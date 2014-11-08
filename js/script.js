@@ -4,7 +4,6 @@ window._i = function(){
   var queryUrl = 'http://suggestqueries.google.com/complete/search?client=firefox&callback=_sr&q=';
   var searchUrl = 'http://www.google.com/search?q=';
   var selectedIndex = -1;
-  var hotHitSelectedIndex = -1;
   var isHotHitSelectionMode = false;
   var maxResultCount = 7;
   var cachedString = '';
@@ -108,8 +107,6 @@ window._i = function(){
   };
 
   var updateList = function(){
-    var targetIndex = isHotHitSelectionMode ?
-                      hotHitSelectedIndex : selectedIndex;
     var targetZone = isHotHitSelectionMode ? '#hotHit' : '#result';
     var selectedListItem = qsa(targetZone + ' li.selected');
 
@@ -118,10 +115,10 @@ window._i = function(){
       removeClass('selected', item);
     }
 
-    if(targetIndex >= 0){
+    if(selectedIndex >= 0){
       var targetItem = qs(targetZone +
                           ' a:nth-child(' +
-                          (targetIndex + 1) +
+                          (selectedIndex + 1) +
                           ') li');
       if(targetItem){
         addClass('selected', targetItem);
@@ -147,9 +144,11 @@ window._i = function(){
   var keyUpHandler = function(event){
     var val = searchBoxInput.value.trim();
     var allList = [];
-    if(val.length > 0){
-      allList = qsa('#result li');
-      switch(event.keyCode){
+    var keyCode = event.keyCode;
+    if(val.length > 0 || isHotHitSelectionMode){
+      allList = qsa((isHotHitSelectionMode ? '#hotHit' : '#result') + ' li');
+
+      switch(keyCode){
         case 38:  // arrow-up
           selectedIndex = selectedIndex < 0 ? -1 : selectedIndex - 1;
           updateList();
@@ -162,72 +161,66 @@ window._i = function(){
           updateList();
           break;
 
-        case 13:  // enter
-          if(selectedIndex >= 0 && selectedIndex < allList.length)
-            val = allList[selectedIndex].dataset.content.trim();
-          changeLocation(searchUrl + val);
-          break;
-
-        default:
-          if(val == cachedString) return;
-
-          cachedString = val;
-          if(globalTimeout) clearTimeout(globalTimeout);
-          globalTimeout = setTimeout(function(){
-            jsonpRequest(val);
-          }, 500);
-      }
-    }
-    else{
-      if(isHotHitSelectionMode){
-        allList = qsa('#hotHit li');
-        switch(event.keyCode){
-          case 38:  // arrow-up
-            hotHitSelectedIndex = hotHitSelectedIndex < 0 ?
-                                  -1 : hotHitSelectedIndex - 1;
-            updateList();
-            break;
-          case 40:  // arrow-down
-            hotHitSelectedIndex += 1;
-            if(hotHitSelectedIndex >= allList.length)
-              hotHitSelectedIndex = hotHitSelectedIndex % allList.length;
-            updateList();
-            break;
-          case 32:  // white space
-            if(hotHitSelectedIndex >= 0 &&
-               hotHitSelectedIndex < allList.length){
-              var selectedHotHit = allList[hotHitSelectedIndex];
+        case 32:  // white space
+          if(isHotHitSelectionMode){    // for hot-hit mode only
+            if(selectedIndex >= 0 &&
+               selectedIndex < allList.length){
+              var selectedHotHit = allList[selectedIndex];
               if(selectedHotHit.dataset.url)
                 changeLocation(selectedHotHit.dataset.url);
             }
             else{
               isHotHitSelectionMode = false;
               searchBoxInput.focus();
-              hotHitSelectedIndex = -1;
+              selectedIndex = -1;
               updateList();
             }
-            break;
-          case 192:  // backquote
-            hotHitSelectedIndex = -1;
+          }
+          break;
+          
+        case 192:  // backquote
+          if(isHotHitSelectionMode){    // for hot-hit mode only
+            selectedIndex = -1;
             updateList();
-            break;
-          default:
-            if(event.keyCode > 47 && event.keyCode < 58){
-              var toSelectIndex = event.keyCode - 49;
-              hotHitSelectedIndex = toSelectIndex < allList.length ?
-                                    toSelectIndex : -1;
-              updateList();
-            }
-            break;
-        }
-      }
-      else{
-        removeClass('hide', timeDisplay);
-        removeClass('active', searchContainer);
-        addClass('show', hotHitDisplay);
-        resultDisplay.innerHTML = '';
-        if(globalTimeout) clearTimeout(globalTimeout);
-      }
+          }
+          break;
+          
+        case 13:  // enter
+          if(!isHotHitSelectionMode){   // for search mode only
+            if(selectedIndex >= 0 && selectedIndex < allList.length)
+              val = allList[selectedIndex].dataset.content.trim();
+            changeLocation(searchUrl + val);
+          }
+          break;
+          
+        default:
+          if(!isHotHitSelectionMode){    // for search mode
+            if(val == cachedString) return;
+
+            cachedString = val;
+            if(globalTimeout) clearTimeout(globalTimeout);
+            globalTimeout = setTimeout(function(){
+              jsonpRequest(val);
+            }, 500);
+          }
+          else{                         // for hot-hit mode
+            if(keyCode > 47 && keyCode < 58){   // only handle 0 ~ 9 num key
+                var toSelectIndex = keyCode - 49;
+                selectedIndex = toSelectIndex < allList.length ?
+                                      toSelectIndex : -1;
+                updateList();
+              }
+              break;
+          }
+
+      }  // end of switch statement
+    }
+    else{   // reset to default view
+      removeClass('hide', timeDisplay);
+      removeClass('active', searchContainer);
+      addClass('show', hotHitDisplay);
+      resultDisplay.innerHTML = '';
+      if(globalTimeout) clearTimeout(globalTimeout);
     }
   };
 
