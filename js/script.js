@@ -38,11 +38,15 @@ window._i = function(){
   ];
 
   /** Helper Functions */
-  var qs = function(selector){
-    return document.querySelector(selector);
+  var qs = function(selector, rootNode){
+    if (rootNode !== undefined)
+      return rootNode.querySelector(selector);
+    else return document.querySelector(selector);
   };
-  var qsa = function(selector){
-    return document.querySelectorAll(selector);
+  var qsa = function(selector, rootNode){
+    if (rootNode !== undefined)
+      return rootNode.querySelectorAll(selector);
+    else return document.querySelectorAll(selector);
   };
   var newElement = function(elementType){
     return document.createElement(elementType);
@@ -58,11 +62,11 @@ window._i = function(){
   };
 
   /** Views */
-  var searchContainer = qs('#search');
-  var resultDisplay = qs('#result');
-  var timeDisplay = qs('#time');
-  var hotHitDisplay = qs('#hotHit');
-  var searchBoxInput = qs('#searchBox');
+  var mainContainer = qs('main');
+  var hotHitDisplay = qs('.hot_hit_list');
+  var resultDisplay = qs('.search_result', mainContainer);
+  var timeDisplay = qs('.time_display', mainContainer);
+  var searchBoxInput = qs('input[type="text"]', mainContainer);
 
   /** JSONP Callback */
   window._sr = function(data){
@@ -73,12 +77,12 @@ window._i = function(){
     if(dataList.length > 0){
       addClass('hide', timeDisplay);
       removeClass('show', hotHitDisplay);
-      addClass('active', searchContainer);
+      addClass('active', mainContainer);
     }
     else{
       removeClass('hide', timeDisplay);
       addClass('show', hotHitDisplay);
-      removeClass('active', searchContainer);
+      removeClass('active', mainContainer);
     }
 
     dataList.forEach(function(perResult, idx){
@@ -107,8 +111,8 @@ window._i = function(){
   };
 
   var updateList = function(){
-    var targetZone = isHotHitSelectionMode ? '#hotHit' : '#result';
-    var selectedListItem = qsa(targetZone + ' li.selected');
+    var targetZone = isHotHitSelectionMode ? hotHitDisplay : resultDisplay;
+    var selectedListItem = qsa('li.selected', targetZone);
 
     for(var idx = 0; idx < selectedListItem.length; idx++){
       var item = selectedListItem[idx];
@@ -116,10 +120,8 @@ window._i = function(){
     }
 
     if(selectedIndex >= 0){
-      var targetItem = qs(targetZone +
-                          ' a:nth-child(' +
-                          (selectedIndex + 1) +
-                          ') li');
+      var targetItem = qs('a:nth-child(' + (selectedIndex + 1) + ') li',
+                          targetZone);
       if(targetItem){
         addClass('selected', targetItem);
         if(!isHotHitSelectionMode)
@@ -146,7 +148,8 @@ window._i = function(){
     var allList = [];
     var keyCode = event.keyCode;
     if(val.length > 0 || isHotHitSelectionMode){
-      allList = qsa((isHotHitSelectionMode ? '#hotHit' : '#result') + ' li');
+      allList = qsa('li',
+        (isHotHitSelectionMode ? hotHitDisplay : resultDisplay));
 
       switch(keyCode){
         case 38:  // arrow-up
@@ -177,14 +180,14 @@ window._i = function(){
             }
           }
           break;
-          
+
         case 192:  // backquote
           if(isHotHitSelectionMode){    // for hot-hit mode only
             selectedIndex = -1;
             updateList();
           }
           break;
-          
+
         case 13:  // enter
           if(!isHotHitSelectionMode){   // for search mode only
             if(selectedIndex >= 0 && selectedIndex < allList.length)
@@ -192,7 +195,7 @@ window._i = function(){
             changeLocation(searchUrl + val);
           }
           break;
-          
+
         default:
           if(!isHotHitSelectionMode){    // for search mode
             if(val == cachedString) return;
@@ -217,7 +220,7 @@ window._i = function(){
     }
     else{   // reset to default view
       removeClass('hide', timeDisplay);
-      removeClass('active', searchContainer);
+      removeClass('active', mainContainer);
       addClass('show', hotHitDisplay);
       resultDisplay.innerHTML = '';
       if(globalTimeout) clearTimeout(globalTimeout);

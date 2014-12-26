@@ -19,7 +19,6 @@ ul{
     padding-left: 0px;
 }
 
-
 // end of normalizing
 
 //// calculate other colors based on theme color
@@ -43,30 +42,28 @@ a{
     display: none !important;
 }
 
-.listContainer{
+.list_container{
     width: 100%;
     height: auto;
     color: #fff;
     max-width: 300px;
 
-    ul{
-        li{
-            padding: 7px;
-            background-color: $listBackground;
-            border: {
-                left: 3px solid $listBorder;
-                bottom: 1px solid $listBorder;
-            }
+    li{
+        padding: 7px;
+        background-color: $listBackground;
+        border: {
+            left: 3px solid $listBorder;
+            bottom: 1px solid $listBorder;
+        }
 
-            &:hover, &.selected{
-                border-left: 3px solid $listHighlightBorder;
-                background-color: $listHighlight !important;
-            }
+        &:hover, &.selected{
+            border-left: 3px solid $listHighlightBorder;
+            background-color: $listHighlight !important;
         }
     }
 }
 
-#search{
+main{
     position: absolute;
     display: inline-block;
     width: 300px;
@@ -81,16 +78,16 @@ a{
     &.active{
         margin-top: -34px * 7 / 2 + -54px;
 
-        #time{
+        .time_display{
             transform: rotateX(90deg);
         }
 
-        #result{
+        .search_result{
             transform: rotateX(0deg);
         }
     }
 
-    #time{
+    .time_display{
         padding-bottom: 5px;
         font-size: 1.5em;
         text-align: center;
@@ -99,7 +96,7 @@ a{
         transform-origin: bottom;
     }
 
-    #searchBox{
+    input[type="text"]{
         width: 100%;
         margin: 0px;
         border-width: 0px;
@@ -116,14 +113,14 @@ a{
         }
     }
 
-    #result{
-        transition: transform 0.5s 0.3s;
+    .search_result{
         transform-origin: top;
         transform: rotateX(90deg);
+        transition: transform 0.5s 0.25s;
     }
 }
 
-#hothit{
+.hot_hit_list{
     display: inline-block;
     position: relative;
     bottom: 0px;
