@@ -1,7 +1,7 @@
 @import "theme.scss";
 
-/** normalizing **/
-/* ref: http://necolas.github.io/normalize.css/ */
+//// normalizing
+// ref: http://necolas.github.io/normalize.css/
 
 body{
     margin: 0;
@@ -19,9 +19,10 @@ ul{
     padding-left: 0px;
 }
 
-/** end of normalizing **/
 
-/* calculate other colors based on theme color */
+// end of normalizing
+
+//// calculate other colors based on theme color
 $bodyBackgroundDarken: scale-color($bodyBackground, $lightness: -30%);
 $listBorder: scale-color($listBackground, $lightness: 10%);
 $listHighlightBorder: scale-color($listHighlight, $lightness: 20%);
