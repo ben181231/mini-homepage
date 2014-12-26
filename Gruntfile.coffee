@@ -8,7 +8,7 @@ module.exports = (grunt) ->
                     style: 'expanded'
                     trace: yes
                 files:
-                    'build/css-noprefix/style.css': 'scss/*.scss'
+                    'build/css-noprefix/style.css': 'scss/style.scss'
 
         autoprefixer:
             dist:
