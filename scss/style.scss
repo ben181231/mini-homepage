@@ -19,10 +19,16 @@ ul{
     padding-left: 0px;
 }
 
+/** end of normalizing **/
+
+/* calculate other colors based on theme color */
+$bodyBackgroundDarken: scale-color($bodyBackground, $lightness: -30%);
+$listBorder: scale-color($listBackground, $lightness: 10%);
+$listHighlightBorder: scale-color($listHighlight, $lightness: 20%);
+
 body{
     background-color: $bodyBackground;
-    background: linear-gradient(darken($bodyBackground, 10%),
-                                lighten($bodyBackground, 10%));
+    background: linear-gradient($bodyBackgroundDarken, $bodyBackground);
     font-family: $font-helvetica;
     color: $textColor;
 }
@@ -47,14 +53,13 @@ a{
             padding: 7px;
             background-color: $listBackground;
             border: {
-                left: 3px solid darken($listHighlight, 30%);
-                bottom: 1px solid lighten($listBackground, 10%);
+                left: 3px solid $listBorder;
+                bottom: 1px solid $listBorder;
             }
 
             &:hover, &.selected{
-                border-left: 3px solid $listHighlight;
-                background-color: lighten($listBackground, 20%)
-                                  !important;
+                border-left: 3px solid $listHighlightBorder;
+                background-color: $listHighlight !important;
             }
         }
     }
@@ -135,9 +140,6 @@ a{
             height: 20px;
             padding-right: 10px;
             margin-bottom: -3px;
-        }
-        &:hover, &.selected{
-            background-color: lighten($listBackground, 10%);
         }
     }
 }
