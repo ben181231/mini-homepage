@@ -238,42 +238,39 @@ window._i = function(){
                             ', ' + timeString;
   };
 
-  var updateLayout = function(){
-    var innerWidth = window.innerWidth;
-    if(innerWidth < 850){
-      removeClass('show', hotHitDisplay);
-      addClass('nodisplay', hotHitDisplay);
-    }
-    else{
-      addClass('show', hotHitDisplay);
-      removeClass('nodisplay', hotHitDisplay);
-    }
-  };
-
   var showHotHit = function(){
-    hotHitDisplay.innerHTML = hotHitDB.map(function(perHotHit){
-      var perHotHitIcon = newElement('img');
-      var perHotHitListItem = newElement('li');
-      var perHotHitAnchor = newElement('a');
+    // use map-reduce function to construct the hot-hit list
+    hotHitDisplay.innerHTML = hotHitDB
+      .map(
+        function(perHotHit){
+          var perHotHitIcon = newElement('img');
+          var perHotHitListItem = newElement('li');
+          var perHotHitAnchor = newElement('a');
 
-      perHotHitIcon.src = perHotHit.favicon ? perHotHit.favicon :
-                          perHotHit.link + '/favicon.ico';
+          perHotHitIcon.src = perHotHit.favicon ? perHotHit.favicon :
+                              perHotHit.link + '/favicon.ico';
 
-      perHotHitListItem.dataset.name = perHotHit.name;
-      perHotHitListItem.dataset.url = perHotHit.link;
+          perHotHitListItem.dataset.name = perHotHit.name;
+          perHotHitListItem.dataset.url = perHotHit.link;
 
-      addChild(perHotHitIcon, perHotHitListItem);
-      addChild(document.createTextNode(perHotHit.name), perHotHitListItem);
+          addChild(perHotHitIcon, perHotHitListItem);
+          addChild(document.createTextNode(perHotHit.name), perHotHitListItem);
 
-      perHotHitAnchor.href = perHotHit.link;
-      addChild(perHotHitListItem, perHotHitAnchor);
+          perHotHitAnchor.href = perHotHit.link;
+          addChild(perHotHitListItem, perHotHitAnchor);
 
-      return perHotHitAnchor;
+          return perHotHitAnchor;
+        }
+      )
+      .reduce(
+        function(lastItem, currentItem){
+          addChild(currentItem, lastItem);
+          return lastItem;
+        }, (newElement('ul'))
+      )
+      .outerHTML;
 
-    }).reduce(function(lastItem, currentItem){
-      addChild(currentItem, lastItem);
-      return lastItem;
-    },(newElement('ul'))).outerHTML;
+      addClass('show', hotHitDisplay);
   };
 
   updateTime();
@@ -283,7 +280,5 @@ window._i = function(){
   document.addEventListener('keydown', keyDownHandler);
 
   showHotHit();
-  updateLayout();
-  window.addEventListener('resize', updateLayout);
 
 };

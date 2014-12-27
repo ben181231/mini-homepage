@@ -122,17 +122,22 @@ main{
 
 .hot_hit_list{
     display: inline-block;
-    position: relative;
-    bottom: 0px;
+    position: absolute;
+    top: 0px;
     left: -150px;
-    width: 150px;
+    width: auto;
+    max-width: 150px;
     transition: left 0.5s 0.3s;
 
     &.show{
         left: 0;
+        @media (max-width: 750px) {
+            left: -150px;
+        }
     }
     li{
         font-size: 18px;
+        padding-right: 15px;
         img{
             width: 20px;
             height: 20px;
