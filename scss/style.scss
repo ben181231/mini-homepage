@@ -78,6 +78,10 @@ main{
     &.active{
         margin-top: -34px * 7 / 2 + -54px;
 
+        @media (max-height: 560px) {
+            margin-top: -34px * 2 / 2 + -54px;
+        }
+
         .time_display{
             transform: rotateX(90deg);
         }

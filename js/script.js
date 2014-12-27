@@ -6,6 +6,8 @@ window._i = function(){
   var selectedIndex = -1;
   var isHotHitSelectionMode = false;
   var maxResultCount = 7;
+  var maxResultCountMobile = 2;
+  var mobileHeightBreakPoint = 560;
   var cachedString = '';
   var globalTimeout = null;
 
@@ -68,10 +70,18 @@ window._i = function(){
   var timeDisplay = qs('.time_display', mainContainer);
   var searchBoxInput = qs('input[type="text"]', mainContainer);
 
+  // getter of max result count
+  var getMaxResultCount = function(){
+      var innerHeight = window.innerHeight;
+      return innerHeight > mobileHeightBreakPoint ?
+               maxResultCount : maxResultCountMobile;
+  };
+
   /** JSONP Callback */
   window._sr = function(data){
     var resultList = newElement('ul');
     var dataList = data[1];
+    var resultCountLimit = getMaxResultCount();
     selectedIndex = -1;
 
     if(dataList.length > 0){
@@ -86,7 +96,7 @@ window._i = function(){
     }
 
     dataList.forEach(function(perResult, idx){
-      if(idx >= maxResultCount) return;
+      if(idx >= resultCountLimit) return;
 
       var perListItem = newElement('li');
       perListItem.dataset.content = perResult;
