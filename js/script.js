@@ -138,8 +138,12 @@ window._i = function(){
   var keyDownHandler = function(event){
     var val = searchBoxInput.value.trim();
     if(val.length === 0 && event.keyCode == 32){ // white space
-      isHotHitSelectionMode = true;
-      searchBoxInput.blur();
+      var left = parseInt(window.getComputedStyle(hotHitDisplay).left);
+
+      if (left >= 0) {
+        isHotHitSelectionMode = true;
+        searchBoxInput.blur();
+      }
     }
   };
 
