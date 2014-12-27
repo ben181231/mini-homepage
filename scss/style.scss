@@ -19,18 +19,54 @@ ul{
     padding-left: 0px;
 }
 
+input[type="text"]{
+    font-size: 1em;
+    margin: 0px;
+    padding: 10px;
+    border:{
+        width: 0px;
+        radius: 0px;
+    }
+
+    &:focus{
+        outline: 0px;
+    }
+}
+
 // end of normalizing
+
+//// media query breakpoints
+$width_bp: 750px;
+$height_bp: 560px;
 
 //// calculate other colors based on theme color
 $bodyBackgroundDarken: scale-color($bodyBackground, $lightness: -30%);
 $listBorder: scale-color($listBackground, $lightness: 10%);
 $listHighlightBorder: scale-color($listHighlight, $lightness: 20%);
 
+//// styling variables
+$listHeight: 34px;
+$listContentPadding: 7px;
+$listBorderWidthLeft: 3px;
+$listBorderWidthBottom: 1px;
+
+$main_width: 300px;
+$main_height: 70px;
+$maxResultCount: 7;
+$maxResultCountMobile: 2;
+
+$hotHitListWidth: 150px;
+
+html{
+    font-size: 16px;
+}
+
 body{
     background-color: $bodyBackground;
     background: linear-gradient($bodyBackgroundDarken, $bodyBackground);
     font-family: $font-helvetica;
     color: $textColor;
+    font-size: 100%;
 }
 
 a{
@@ -38,48 +74,47 @@ a{
     color: $textColor;
 }
 
-.nodisplay{
-    display: none !important;
-}
 
 .list_container{
     width: 100%;
     height: auto;
-    color: #fff;
-    max-width: 300px;
 
     li{
-        padding: 7px;
         background-color: $listBackground;
+        box-sizing: border-box;
+        width: 100%;
+        height: $listHeight;
+        padding: $listContentPadding;
         border: {
-            left: 3px solid $listBorder;
-            bottom: 1px solid $listBorder;
+            left: $listBorderWidthLeft solid $listBorder;
+            bottom: $listBorderWidthBottom solid $listBorder;
         }
 
         &:hover, &.selected{
-            border-left: 3px solid $listHighlightBorder;
-            background-color: $listHighlight !important;
+            border-left-color: $listHighlightBorder;
+            background-color: $listHighlight;
         }
     }
 }
 
+
 main{
     position: absolute;
-    display: inline-block;
-    width: 300px;
-    height: auto;
+    width: $main_width;
+    height: $main_height;
     top: 50%;
     left: 50%;
-    padding: 0px;
-    margin-top: -54px;
-    margin-left: -150px;
+    margin-top: -($main_height / 2);
+    margin-left: -($main_width / 2);
     transition: margin-top 0.5s;
 
     &.active{
-        margin-top: -34px * 7 / 2 + -54px;
+        margin-top: -(($listHeight * $maxResultCount +
+                       $main_height) / 2);
 
-        @media (max-height: 560px) {
-            margin-top: -34px * 2 / 2 + -54px;
+        @media (max-height: $height_bp) {
+            margin-top: -(($listHeight * $maxResultCountMobile +
+                           $main_height) / 2);
         }
 
         .time_display{
@@ -93,27 +128,20 @@ main{
 
     .time_display{
         padding-bottom: 5px;
-        font-size: 1.5em;
+        font-size: 1.4em;
         text-align: center;
-        opacity: 0.7;
         transition: transform 0.5s;
         transform-origin: bottom;
     }
 
     input[type="text"]{
         width: 100%;
-        margin: 0px;
-        border-width: 0px;
-        border-bottom: 1px solid #000;
-        border-radius: 0px;
-        background-color: transparentize(#fff, 0.95);
-        padding: 10px;
-        font-size: 1em;
-        color: #fff;
+        border-bottom: 1px solid black;
+        background-color: transparentize(white, 0.95);
+        color: white;
 
         &:focus{
-            outline: 0px;
-            border-bottom: 1px solid #fff;
+            border-bottom: 1px solid white;
         }
     }
 
@@ -124,29 +152,30 @@ main{
     }
 }
 
+
 .hot_hit_list{
     display: inline-block;
     position: absolute;
     top: 0px;
-    left: -150px;
+    left: -$hotHitListWidth;
     width: auto;
-    max-width: 150px;
+    max-width: $hotHitListWidth;
     transition: left 0.5s 0.3s;
 
     &.show{
         left: 0;
-        @media (max-width: 750px) {
-            left: -150px;
+        @media (max-width: $width_bp), (max-height: $height_bp) {
+            left: -$hotHitListWidth;
         }
     }
     li{
-        font-size: 18px;
-        padding-right: 15px;
+        font-size: 0.85em;
+        padding-right: $listContentPadding * 2;
         img{
-            width: 20px;
-            height: 20px;
+            width: auto;
+            height: 100%;
+            vertical-align: text-bottom;
             padding-right: 10px;
-            margin-bottom: -3px;
         }
     }
 }
