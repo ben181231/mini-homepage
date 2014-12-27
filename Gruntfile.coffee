@@ -2,6 +2,10 @@ module.exports = (grunt) ->
     grunt.initConfig
         pkg: grunt.file.readJSON 'package.json'
 
+        clean:
+            dist:
+                targets: ["build", "dist"]
+
         sass:
             dist:
                 options:
@@ -42,6 +46,12 @@ module.exports = (grunt) ->
                 files:
                     'build/min/main.min.html': 'build/combine/main.combine.html'
 
+        encode:
+            dist:
+                files:
+                    'dist/encodedURI': 'build/min/main.min.html'
+
+
         symlink:
             dist:
                 options:
@@ -81,6 +91,9 @@ module.exports = (grunt) ->
     grunt.loadNpmTasks 'grunt-contrib-uglify'
     grunt.loadNpmTasks 'grunt-contrib-jshint'
 
+    # load custom tasks
+    grunt.loadTasks 'grunt_tasks'
+
     grunt.registerTask 'build', ['jshint', 'sass', 'autoprefixer', 'symlink:js']
 
     grunt.registerTask 'combine-dev', ['htmlcssjs:dev', 'symlink']
@@ -90,27 +103,5 @@ module.exports = (grunt) ->
 
     grunt.registerTask 'default', ['clean', 'build', 'combine-dev', 'server', 'watch']
     grunt.registerTask 'dist', ['clean', 'build', 'combine', 'encode']
-
-    # custom tasks
-    grunt.registerTask 'encode', 'Encode the whole html into URI', () ->
-        srcURL = 'build/min/main.min.html'
-        dstURL = 'dist/encodedURI'
-        content = grunt.file.read(srcURL)
-        content = 'data:text/html,' + escape content
-        grunt.file.write dstURL, content
-        grunt.log.oklns "Successfully output encoded URI to file \"#{dstURL}\""
-        return
-
-    grunt.registerTask 'clean', 'Clean the build and dist directories', () ->
-        buildDir = 'build'
-        distDir = 'dist'
-        if grunt.file.exists buildDir
-            grunt.log.writeln 'Cleaning build directory...'
-            grunt.file.delete buildDir
-        if grunt.file.exists distDir
-            grunt.log.writeln 'Cleaning dist directory...'
-            grunt.file.delete distDir
-
-        return
 
     return
