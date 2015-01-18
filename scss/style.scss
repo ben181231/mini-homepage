@@ -87,7 +87,9 @@ a{
         background-color: $listBackground;
         @include box-sizing(border-box);
         width: 100%;
-        height: $listHeight;
+        min-height: $listHeight;
+        max-height: $listHeight * 2;
+        overflow: hidden;
         padding: $listContentPadding;
         border: {
             left: $listBorderWidthLeft solid $listBorder;
