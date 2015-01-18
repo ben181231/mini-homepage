@@ -1,4 +1,8 @@
+@import "compass";
 @import "theme.scss";
+
+//// customize compass
+$supported-browsers: ("safari", "ios-safari", "chrome", "firefox");
 
 //// normalizing
 // ref: http://necolas.github.io/normalize.css/
@@ -46,7 +50,7 @@ $listHighlightBorder: scale-color($listHighlight, $lightness: 20%);
 
 //// styling variables
 $listHeight: 34px;
-$listContentPadding: 7px;
+$listContentPadding: 5px;
 $listBorderWidthLeft: 3px;
 $listBorderWidthBottom: 1px;
 
@@ -63,7 +67,7 @@ html{
 
 body{
     background-color: $bodyBackground;
-    background: linear-gradient($bodyBackgroundDarken, $bodyBackground);
+    @include background-image(linear-gradient($bodyBackgroundDarken, $bodyBackground));
     font-family: $font-helvetica;
     color: $textColor;
     font-size: 100%;
@@ -81,7 +85,7 @@ a{
 
     li{
         background-color: $listBackground;
-        box-sizing: border-box;
+        @include box-sizing(border-box);
         width: 100%;
         height: $listHeight;
         padding: $listContentPadding;
@@ -106,7 +110,8 @@ main{
     left: 50%;
     margin-top: -($main_height / 2);
     margin-left: -($main_width / 2);
-    transition: margin-top 0.5s;
+    @include single-transition(margin-top, 0.5s);
+    @include perspective(200px);
 
     &.active{
         margin-top: -(($listHeight * $maxResultCount +
@@ -118,11 +123,11 @@ main{
         }
 
         .time_display{
-            transform: rotateX(90deg);
+            @include transform(rotateX(90deg));
         }
 
         .search_result{
-            transform: rotateX(0deg);
+            @include transform(rotateX(0deg));
         }
     }
 
@@ -130,8 +135,8 @@ main{
         padding-bottom: 5px;
         font-size: 1.4em;
         text-align: center;
-        transition: transform 0.5s;
-        transform-origin: bottom;
+        @include single-transition(transform, 0.5s);
+        @include transform-origin($origin-y: bottom);
     }
 
     input[type="text"]{
@@ -146,9 +151,9 @@ main{
     }
 
     .search_result{
-        transform-origin: top;
-        transform: rotateX(90deg);
-        transition: transform 0.5s 0.25s;
+        @include transform-origin($origin-y: top);
+        @include transform(rotateX(-75deg));
+        @include single-transition(transform, 0.5s);
     }
 }
 
@@ -160,7 +165,7 @@ main{
     left: -$hotHitListWidth;
     width: auto;
     max-width: $hotHitListWidth;
-    transition: left 0.5s 0.3s;
+    @include single-transition(left, 0.5s, 0.3s);
 
     &.show{
         left: 0;
@@ -173,8 +178,8 @@ main{
         padding-right: $listContentPadding * 2;
         img{
             width: auto;
-            height: 100%;
-            vertical-align: text-bottom;
+            height: $listHeight - $listContentPadding * 2 - 1px;
+            vertical-align: middle;
             padding-right: 10px;
         }
     }
