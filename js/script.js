@@ -206,7 +206,7 @@ window._i = function(){
           if(!isHotHitSelectionMode){   // for search mode only
             if(selectedIndex >= 0 && selectedIndex < allList.length)
               val = allList[selectedIndex].dataset.content.trim();
-            changeLocation(searchUrl + val);
+            changeLocation(searchUrl + escape(val));
           }
           break;
 
@@ -217,7 +217,7 @@ window._i = function(){
             cachedString = val;
             if(globalTimeout) clearTimeout(globalTimeout);
             globalTimeout = setTimeout(function(){
-              jsonpRequest(val);
+              jsonpRequest(escape(val));
             }, 500);
           }
           else{                         // for hot-hit mode
