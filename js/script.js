@@ -116,7 +116,7 @@ window._i = function(){
 
   var jsonpRequest = function(requestString){
     var newScriptTag = newElement('script');
-    newScriptTag.src = queryUrl + requestString;
+    newScriptTag.src = queryUrl + encodeURIComponent(requestString);
     addChild(newScriptTag, qs('head'));
   };
 
@@ -206,7 +206,7 @@ window._i = function(){
           if(!isHotHitSelectionMode){   // for search mode only
             if(selectedIndex >= 0 && selectedIndex < allList.length)
               val = allList[selectedIndex].dataset.content.trim();
-            changeLocation(searchUrl + escape(val));
+            changeLocation(searchUrl + encodeURIComponent(val));
           }
           break;
 
@@ -217,7 +217,7 @@ window._i = function(){
             cachedString = val;
             if(globalTimeout) clearTimeout(globalTimeout);
             globalTimeout = setTimeout(function(){
-              jsonpRequest(escape(val));
+              jsonpRequest(val);
             }, 500);
           }
           else{                         // for hot-hit mode
