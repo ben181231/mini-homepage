@@ -16,21 +16,24 @@ module.exports = (grunt) ->
                 files:
                     'build/js/script.min.js': 'build/js/script.js'
 
-        htmlcssjs:
+        htmlbuild:
             dev:
-                src: [
-                    'build/css/style.css',
-                    'build/js/script.js',
-                    'html/main.html'
-                ]
+                src: 'html/main.html'
                 dest: 'build/devBox/index.html'
+                options:
+                    beautify: true,
+                    scripts:
+                        main: 'build/js/script.js'
+                    styles:
+                        main: 'build/css/style.css'
             dist:
-                src: [
-                    'build/css/style.css',
-                    'build/js/script.min.js',
-                    'html/main.html'
-                ]
+                src: 'html/main.html'
                 dest: 'build/combine/main.combine.html'
+                options:
+                    scripts:
+                        main: 'build/js/script.min.js'
+                    styles:
+                        main: 'build/css/style.css'
 
         html_minify:
             dist:
@@ -76,9 +79,8 @@ module.exports = (grunt) ->
                     sassDir: 'scss'
                     cssDir: 'build/css'
 
-
-    grunt.loadNpmTasks 'grunt-htmlcssjs-combine'
     grunt.loadNpmTasks 'grunt-html-minify'
+    grunt.loadNpmTasks 'grunt-html-build'
     grunt.loadNpmTasks 'grunt-contrib-watch'
     grunt.loadNpmTasks 'grunt-contrib-symlink'
     grunt.loadNpmTasks 'grunt-contrib-connect'
@@ -94,7 +96,7 @@ module.exports = (grunt) ->
         'jshint'
         'compass:dev'
         'symlink'
-        'htmlcssjs:dev'
+        'htmlbuild:dev'
     ]
 
     # define main workflows
@@ -105,7 +107,7 @@ module.exports = (grunt) ->
         'compass:dist'
         'symlink'
         'uglify'
-        'htmlcssjs:dist'
+        'htmlbuild:dist'
         'html_minify'
         'encode'
     ]
