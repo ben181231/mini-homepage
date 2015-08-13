@@ -2,6 +2,11 @@ module.exports = (grunt) ->
     grunt.initConfig
         pkg: grunt.file.readJSON 'package.json'
 
+        globalConfig:
+            distOutput: 'dist/encodedURI'
+            devPort: 12334
+            devHost: 'localhost'
+
         clean:
             dist:
                 targets: ["build", "dist"]
@@ -44,7 +49,7 @@ module.exports = (grunt) ->
         encode:
             dist:
                 files:
-                    'dist/encodedURI': 'build/min/main.min.html'
+                    '<%= globalConfig.distOutput %>': 'build/min/main.min.html'
 
 
         symlink:
@@ -58,7 +63,8 @@ module.exports = (grunt) ->
         connect:
             server:
                 options:
-                    port: 12334
+                    port: '<%= globalConfig.devPort %>'
+                    hostname: '<%= globalConfig.devHost %>'
                     base: 'build/devBox'
                     livereload: yes
 
@@ -80,6 +86,10 @@ module.exports = (grunt) ->
                     sassDir: 'scss'
                     cssDir: 'build/css'
 
+        exec:
+            pbcopy: '[[ -e <%= globalConfig.distOutput %> ]] && cat <%= globalConfig.distOutput %> | pbcopy'
+            openBrowser: 'open http://<%= globalConfig.devHost %>:<%= globalConfig.devPort %>'
+
     grunt.loadNpmTasks 'grunt-html-minify'
     grunt.loadNpmTasks 'grunt-html-build'
     grunt.loadNpmTasks 'grunt-contrib-watch'
@@ -88,6 +98,7 @@ module.exports = (grunt) ->
     grunt.loadNpmTasks 'grunt-contrib-uglify'
     grunt.loadNpmTasks 'grunt-contrib-jshint'
     grunt.loadNpmTasks 'grunt-contrib-compass'
+    grunt.loadNpmTasks 'grunt-exec'
 
     # load custom tasks
     grunt.loadTasks 'grunt_tasks'
@@ -99,18 +110,29 @@ module.exports = (grunt) ->
         'symlink'
         'htmlbuild:dev'
     ]
-
-    # define main workflows
-    grunt.registerTask 'default', ['clean', 'build', 'connect', 'watch']
-    grunt.registerTask 'dist', [
-        'clean'
+    grunt.registerTask 'build_dist', [
         'jshint'
         'compass:dist'
         'symlink'
         'uglify'
         'htmlbuild:dist'
         'html_minify'
+    ]
+
+    # define main workflows
+    grunt.registerTask 'default', [
+        'clean',
+        'build',
+        'connect',
+        'exec:openBrowser'
+        'watch'
+    ]
+
+    grunt.registerTask 'dist', [
+        'clean'
+        'build_dist'
         'encode'
+        'exec:pbcopy'
     ]
 
     return
