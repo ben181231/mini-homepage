@@ -2,6 +2,11 @@ module.exports = (grunt) ->
     grunt.initConfig
         pkg: grunt.file.readJSON 'package.json'
 
+        globalConfig:
+            distOutput: 'dist/encodedURI'
+            devPort: 12334
+            devHost: 'localhost'
+
         clean:
             dist:
                 targets: ["build", "dist"]
@@ -15,22 +20,26 @@ module.exports = (grunt) ->
             dist:
                 files:
                     'build/js/script.min.js': 'build/js/script.js'
+                    'build/js/fav-list.min.js': 'build/js/fav-list.js'
 
-        htmlcssjs:
+        htmlbuild:
             dev:
-                src: [
-                    'build/css/style.css',
-                    'build/js/script.js',
-                    'html/main.html'
-                ]
+                src: 'html/main.html'
                 dest: 'build/devBox/index.html'
+                options:
+                    beautify: true,
+                    scripts:
+                        main: 'build/js/*.js'
+                    styles:
+                        main: 'build/css/style.css'
             dist:
-                src: [
-                    'build/css/style.css',
-                    'build/js/script.min.js',
-                    'html/main.html'
-                ]
+                src: 'html/main.html'
                 dest: 'build/combine/main.combine.html'
+                options:
+                    scripts:
+                        main: 'build/js/*.min.js'
+                    styles:
+                        main: 'build/css/style.css'
 
         html_minify:
             dist:
@@ -40,21 +49,22 @@ module.exports = (grunt) ->
         encode:
             dist:
                 files:
-                    'dist/encodedURI': 'build/min/main.min.html'
+                    '<%= globalConfig.distOutput %>': 'build/min/main.min.html'
 
 
         symlink:
             js:
                 options:
                     overwrite: yes
-                files:[
+                files:
                     'build/js/script.js': 'js/script.js'
-                ]
+                    'build/js/fav-list.js': 'js/fav-list.js'
 
         connect:
             server:
                 options:
-                    port: 12334
+                    port: '<%= globalConfig.devPort %>'
+                    hostname: '<%= globalConfig.devHost %>'
                     base: 'build/devBox'
                     livereload: yes
 
@@ -76,15 +86,19 @@ module.exports = (grunt) ->
                     sassDir: 'scss'
                     cssDir: 'build/css'
 
+        exec:
+            pbcopy: '[[ -e <%= globalConfig.distOutput %> ]] && cat <%= globalConfig.distOutput %> | pbcopy'
+            openBrowser: 'open http://<%= globalConfig.devHost %>:<%= globalConfig.devPort %>'
 
-    grunt.loadNpmTasks 'grunt-htmlcssjs-combine'
     grunt.loadNpmTasks 'grunt-html-minify'
+    grunt.loadNpmTasks 'grunt-html-build'
     grunt.loadNpmTasks 'grunt-contrib-watch'
     grunt.loadNpmTasks 'grunt-contrib-symlink'
     grunt.loadNpmTasks 'grunt-contrib-connect'
     grunt.loadNpmTasks 'grunt-contrib-uglify'
     grunt.loadNpmTasks 'grunt-contrib-jshint'
     grunt.loadNpmTasks 'grunt-contrib-compass'
+    grunt.loadNpmTasks 'grunt-exec'
 
     # load custom tasks
     grunt.loadTasks 'grunt_tasks'
@@ -94,20 +108,31 @@ module.exports = (grunt) ->
         'jshint'
         'compass:dev'
         'symlink'
-        'htmlcssjs:dev'
+        'htmlbuild:dev'
     ]
-
-    # define main workflows
-    grunt.registerTask 'default', ['clean', 'build', 'connect', 'watch']
-    grunt.registerTask 'dist', [
-        'clean'
+    grunt.registerTask 'build_dist', [
         'jshint'
         'compass:dist'
         'symlink'
         'uglify'
-        'htmlcssjs:dist'
+        'htmlbuild:dist'
         'html_minify'
+    ]
+
+    # define main workflows
+    grunt.registerTask 'default', [
+        'clean',
+        'build',
+        'connect',
+        'exec:openBrowser'
+        'watch'
+    ]
+
+    grunt.registerTask 'dist', [
+        'clean'
+        'build_dist'
         'encode'
+        'exec:pbcopy'
     ]
 
     return

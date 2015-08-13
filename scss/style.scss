@@ -59,7 +59,7 @@ $main_height: 70px;
 $maxResultCount: 7;
 $maxResultCountMobile: 2;
 
-$hotHitListWidth: 150px;
+$favListWidth: 150px;
 
 html{
     font-size: 16px;
@@ -160,19 +160,19 @@ main{
 }
 
 
-.hot_hit_list{
+.fav_list{
     display: inline-block;
     position: absolute;
     top: 0px;
-    left: -$hotHitListWidth;
+    left: -$favListWidth;
     width: auto;
-    max-width: $hotHitListWidth;
+    max-width: $favListWidth;
     @include single-transition(left, 0.5s, 0.3s);
 
     &.show{
         left: 0;
         @media (max-width: $width_bp), (max-height: $height_bp) {
-            left: -$hotHitListWidth;
+            left: -$favListWidth;
         }
     }
     li{
