@@ -15,6 +15,7 @@ module.exports = (grunt) ->
             dist:
                 files:
                     'build/js/script.min.js': 'build/js/script.js'
+                    'build/js/fav-list.min.js': 'build/js/fav-list.js'
 
         htmlbuild:
             dev:
@@ -23,7 +24,7 @@ module.exports = (grunt) ->
                 options:
                     beautify: true,
                     scripts:
-                        main: 'build/js/script.js'
+                        main: 'build/js/*.js'
                     styles:
                         main: 'build/css/style.css'
             dist:
@@ -31,7 +32,7 @@ module.exports = (grunt) ->
                 dest: 'build/combine/main.combine.html'
                 options:
                     scripts:
-                        main: 'build/js/script.min.js'
+                        main: 'build/js/*.min.js'
                     styles:
                         main: 'build/css/style.css'
 
@@ -50,9 +51,9 @@ module.exports = (grunt) ->
             js:
                 options:
                     overwrite: yes
-                files:[
+                files:
                     'build/js/script.js': 'js/script.js'
-                ]
+                    'build/js/fav-list.js': 'js/fav-list.js'
 
         connect:
             server:
