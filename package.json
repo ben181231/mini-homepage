@@ -2,6 +2,11 @@
   "name": "Mini-Homepage",
   "version": "0.0.1",
   "description": "Mini Homepage",
+  "scripts": {
+    "start": "grunt",
+    "build": "grunt dist",
+    "clean": "grunt clean"
+  },
   "private": true,
   "devDependencies": {
     "grunt": "^0.4.5",
